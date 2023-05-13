@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mongo-net
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: dmarket
+      ME_CONFIG_MONGODB_ADMINPASSWORD: Xhdhy
+      ME_CONFIG_MONGODB_SERVER: mongo
+    networks:
+      - mongo-net
+    depends_on:
+      - mongo
+
+  mongo-init-replica:
+    image: mongo:4.4
+    networks:
+      - mongo-net
+    depends_on:
+      - mongo
+    command: 'bash -c "sleep 10 && mongo --host mongo --eval ''rs.initiate({_id: \"rs0\", members:[{_id: 0, host: \"mongo:27017\"}]})''"'
+
+networks:
+  mongo-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+
