@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   mongo:
-    image: mongo
+    image: mongo:6.0
     restart: always
     ports:
       - 27017:27017
@@ -26,7 +26,7 @@ services:
       - mongo
 
   mongo-init-replica:
-    image: mongo:4.4
+    image: mongo:6.0
     networks:
       - mongo-net
     depends_on:
